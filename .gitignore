@@ -1,0 +1,11 @@
+data
+wandb
+__pycache__
+*stories.txt
+*.model
+*.vocab
+*.gzip
+*.tar.gz*
+*train.txt
+*val.txt
+*test.txt

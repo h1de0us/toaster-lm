@@ -1,0 +1,6 @@
+pytorch==2.1.0+cu121
+sentencepiece
+requests
+wandb
+tensorboard
+tqdm
