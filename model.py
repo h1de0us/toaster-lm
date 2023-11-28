@@ -32,6 +32,7 @@ class PositionalEncoding(nn.Module):
 
 
 class TransformerDecoder(nn.Module):
+    # TODO: add flash attention
     def __init__(self, 
                  vocab_size: int,
                  embed_dim: int, # the number of expected features in the input 
@@ -50,17 +51,11 @@ class TransformerDecoder(nn.Module):
         self.dataset = text_dataset
 
     def forward(self, x, mask):
-        # x.shape is (batch_size, seq_len)
-        # mask.shape is (seq_len, seq_len)
         x = self.embeds(x)
-        # print(x.shape)
         x = self.pos_embeds(x)
-        # print(x.shape)
         for decoder_block in self.decoder:
-            x = decoder_block(x, mask)
-            # print(x.shape)
+            x = decoder_block(x, src_mask=mask, is_causal=True)
         x = self.fc(x)
-        # print(x.shape)
         return x
 
 

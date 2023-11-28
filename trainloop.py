@@ -18,8 +18,9 @@ def train(model, optimizer, criterion, train_loader, test_loader, num_epochs):
             src = src.to(device)
             tgt_out = src[:, 1:]
             src = src[:, :-1]
-            tgt_mask = nn.Transformer.generate_square_subsequent_mask(tgt_out.shape[1]).to(device)
-            logits = model(src, tgt_mask)
+            mask = nn.Transformer.generate_square_subsequent_mask(tgt_out.shape[1]).to(device)
+            logits = model(src, mask)
+            # todo: torch.nn.utils.clip_grad_norm_(model.parameters(), 0.5)
             optimizer.zero_grad()
             
             loss = criterion(logits.reshape(-1, logits.shape[-1]), tgt_out.reshape(-1))

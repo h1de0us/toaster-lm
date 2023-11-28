@@ -45,8 +45,7 @@ class TextDataset(Dataset):
             self.sp_model.bos_id(), self.sp_model.eos_id()
 
         self.max_length = max_length + 2  # + 2 на bos и eos
-        # self.vocab_size = self.sp_model.vocab_size()
-        self.vocab_size = vocab_size
+        self.vocab_size = self.sp_model.vocab_size()
 
     def text2ids(self, texts: Union[str, List[str]]) -> Union[List[int], List[List[int]]]:
         """
