@@ -9,3 +9,4 @@ __pycache__
 *train.txt
 *val.txt
 *test.txt
+*.ipynb

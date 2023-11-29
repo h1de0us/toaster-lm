@@ -1,8 +1,8 @@
 # a helper function to download the data
 function download_data {
-    # wget --quiet --show-progress "https://huggingface.co/datasets/roneneldan/TinyStories/resolve/main/TinyStories_all_data.tar.gz"
-    # if data folder exists, do nothing
     [ -d data ] ||
+    wget --quiet --show-progress "https://huggingface.co/datasets/roneneldan/TinyStories/resolve/main/TinyStories_all_data.tar.gz"
+    # if data folder exists, do nothing
     mkdir data
     mv TinyStories_all_data.tar.gz data
     cd data
@@ -17,5 +17,5 @@ function parse_stories_into_file {
     python3 parse_stories.py
 }
 
-# download_data
+download_data
 parse_stories_into_file

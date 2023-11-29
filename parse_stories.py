@@ -23,11 +23,11 @@ def collect_data_from_folder(folder_path):
 def save_stories_to_file(stories, output_file="stories.txt"):
     with open(output_file, "w", encoding="utf-8") as output:
         for story in stories:
-            # story = story.replace("\n", " ") # if we want to fit a story on one line
-            output.write(story + "\n") # remove if you split a story into several lines
+            story = story.replace("\n", " ") # if we want to fit a story on one line
+            output.write(story + "\n") # remove adding "\n" if you split a story into several lines
 
 folder_path = "data"
 
 all_stories = collect_data_from_folder(folder_path)
 
-save_stories_to_file(all_stories, output_file="short_stories.txt")
+save_stories_to_file(all_stories, output_file="stories.txt")
