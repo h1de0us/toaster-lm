@@ -28,7 +28,7 @@ def train(model,
     for epoch in range(1, num_epochs + 1):
         model.train()
         running_loss = 0.0
-        for batch in train_loader:
+        for step, batch in enumerate(train_loader):
             optimizer.zero_grad()
             src = batch['texts']
             pad_masks = batch['pad_masks']
@@ -40,6 +40,8 @@ def train(model,
                 loss = criterion(logits.reshape(-1, logits.shape[-1]), tgt_out.reshape(-1))
             
             loss.backward() # we do not scale the loss to not have issues with precision
+            if step % 50 == 0:
+                wandb.log({"training_loss": loss.item()})
             running_loss += loss.item() * src.shape[0]
 
             scaler.scale(loss)
@@ -75,7 +77,7 @@ def train(model,
         running_loss = 0.0
         model.eval()
         with torch.no_grad():
-            for batch in test_loader:
+            for step, batch in enumerate(test_loader):
                 src = batch['texts']
                 pad_masks = batch['pad_masks']
                 src = src.to(device)
@@ -84,6 +86,8 @@ def train(model,
                 with autocast(device_type='cuda', dtype=torch.float16):
                     logits = model(src, pad_masks)
                 loss = criterion(logits.reshape(-1, logits.shape[-1]), tgt_out.reshape(-1))
+                if step % 50 == 0:
+                    wandb.log({"test_loss": loss.item()})
                 running_loss += loss.item() * src.shape[0]
             test_losses += [running_loss / len(test_loader.dataset)]
             wandb.log({"test_loss": test_losses[-1]})
