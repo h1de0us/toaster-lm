@@ -12,7 +12,7 @@ def pad_sequence(batch):
 def collate_fn(dataset_items: List[dict]):
     return {
         "texts": torch.as_tensor(pad_sequence([item[0] for item in dataset_items])),
-        "lengths": torch.as_tensor([item[1] for item in dataset_items]),
+        "pad_masks": torch.as_tensor(pad_sequence([torch.ones(item[1]) for item in dataset_items])),
     }
 
 

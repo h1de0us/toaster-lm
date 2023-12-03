@@ -63,25 +63,25 @@ class TransformerDecoder(nn.Module):
         self.dataset = text_dataset
 
 
-    def _forward(self, x, mask):
+    def _forward(self, x, padding_mask):
         x = self.embeds(x)
         x = self.pos_embeds(x)
-
+        mask = nn.Transformer.generate_square_subsequent_mask(x.shape[1]).to(x.device)
         for decoder_block in self.decoder:
             x = decoder_block(x, src_mask=mask, is_causal=True)
         x = self.fc(x)
         return x
 
 
-    def forward(self, x, mask):
+    def forward(self, x, padding_mask):
         if self.use_flash_attention:
             with torch.backends.cuda.sdp_kernel(
                 enable_flash=True, 
                 enable_math=True, 
                 enable_mem_efficient=True
             ):
-                return self._forward(x, mask)
-        return self._forward(x, mask)
+                return self._forward(x, padding_mask)
+        return self._forward(x, padding_mask)
         
 
     def generate(self, text_dataset, prompt="", max_len=100):

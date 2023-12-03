@@ -30,12 +30,12 @@ def train(model,
         for batch in train_loader:
             optimizer.zero_grad()
             src = batch['texts']
+            pad_masks = batch['pad_masks']
             src = src.to(device)
             tgt_out = src[:, 1:]
             src = src[:, :-1]
-            mask = nn.Transformer.generate_square_subsequent_mask(tgt_out.shape[1]).to(device)
             with autocast(device_type='cuda', dtype=torch.bfloat16):
-                logits = model(src, mask)
+                logits = model(src, pad_masks)
                 loss = criterion(logits.reshape(-1, logits.shape[-1]), tgt_out.reshape(-1))
             
             loss.backward() # we do not scale the loss to not have issues with precision
@@ -76,12 +76,12 @@ def train(model,
         with torch.no_grad():
             for batch in test_loader:
                 src = batch['texts']
+                pad_masks = batch['pad_masks']
                 src = src.to(device)
                 tgt_out = src[:, 1:]
                 src = src[:, :-1]
-                tgt_mask = nn.Transformer.generate_square_subsequent_mask(tgt_out.shape[1]).to(device)
                 with autocast(device_type='cuda', dtype=torch.float16):
-                    logits = model(src, tgt_mask)
+                    logits = model(src, pad_masks)
                 loss = criterion(logits.reshape(-1, logits.shape[-1]), tgt_out.reshape(-1))
                 running_loss += loss.item() * src.shape[0]
             test_losses += [running_loss / len(test_loader.dataset)]
