@@ -85,21 +85,22 @@ class TransformerDecoder(nn.Module):
         
 
     def generate(self, text_dataset, prompt="", max_len=100):
-        # prompt initialization
-        input_ids = text_dataset.text2ids(prompt)
-        input_ids = torch.tensor(input_ids).unsqueeze(0)
-        # (1, seq_len, embed_dim)
+        with torch.no_grad():
+            # prompt initialization
+            input_ids = text_dataset.text2ids(prompt)[:-1] # remove EOS token
+            input_ids = torch.tensor(input_ids).unsqueeze(0)
+            # (1, seq_len,)
 
-        mask = torch.triu(torch.ones(max_len, max_len), diagonal=1).bool()
+            mask = torch.triu(torch.ones(max_len, max_len), diagonal=1).bool()
 
-        for _ in range(max_len):
-            output = self.forward(input_ids, mask)
-            output_probs = F.softmax(output[:, -1, :], dim=-1)
-            next_token = torch.multinomial(output_probs, 1)
-            input_ids = torch.cat([input_ids, next_token], dim=-1)
+            for _ in range(max_len):
+                output = self.forward(input_ids, mask)
+                output_probs = F.softmax(output[:, -1, :], dim=-1)
+                next_token = torch.multinomial(output_probs, 1)
+                input_ids = torch.cat([input_ids, next_token], dim=-1)
 
-        generated_text = text_dataset.ids2text(input_ids.squeeze().tolist())
-        return generated_text
+            generated_text = text_dataset.ids2text(input_ids.squeeze().tolist())
+            return generated_text
     
 
 # TODO: generation with beam search

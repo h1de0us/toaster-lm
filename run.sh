@@ -14,7 +14,7 @@ function parse_stories_into_file {
     # parse the stories into a single file
     # if the file exists, do nothing
     [ -f stories.txt ] ||
-    python3 parse_stories.py
+    python3 ./parse_stories.py
 }
 
 download_data

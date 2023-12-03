@@ -17,6 +17,7 @@ def collect_data_from_folder(folder_path):
                             all_stories.append(story_text)
                 except json.JSONDecodeError as e:
                     print(f"Error decoding JSON in {filename}: {e}")
+            os.remove(file_path)
     print(len(all_stories))
     return all_stories
 
