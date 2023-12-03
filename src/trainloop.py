@@ -13,6 +13,7 @@ def train(model,
           train_loader, 
           test_loader, 
           num_epochs, 
+          dataset,
           scheduler=None, 
           clip_grad=False,
           max_gradient_norm=1., 
@@ -90,6 +91,8 @@ def train(model,
 
 
         if epoch % log_epoch == 0:
+            wandb.log({"story": 
+                       wandb.Html(model.generate(dataset, prompt="Once upon a time there was a", max_len=50))})
             save_checkpoint(checkpoint_dir="checkpoints",
                             model=model, 
                             optimizer=optimizer,
