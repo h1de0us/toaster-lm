@@ -56,7 +56,7 @@ class TransformerDecoder(nn.Module):
             self.pos_embeds = RotaryPositionEmbedding(embed_dim)
         else:
             self.pos_embeds = PositionalEncoding(embed_dim)
-        self.decoder = nn.ModuleList([nn.TransformerEncoderLayer(embed_dim, n_head, ff_dim, batch_first=True) for _ in range(n_blocks)])
+        self.decoder = nn.ModuleList([nn.TransformerEncoderLayer(embed_dim, n_head, ff_dim, batch_first=True, norm_first=True) for _ in range(n_blocks)])
         self.fc = nn.Linear(embed_dim, vocab_size)
         self.softmax = nn.Softmax(dim=1)
 
@@ -68,7 +68,7 @@ class TransformerDecoder(nn.Module):
         x = self.pos_embeds(x)
         mask = nn.Transformer.generate_square_subsequent_mask(x.shape[1]).to(x.device)
         for decoder_block in self.decoder:
-            x = decoder_block(x, src_mask=mask, is_causal=True)
+            x = decoder_block(x, src_mask=mask, src_key_padding_mask=padding_mask, is_causal=True)
         x = self.fc(x)
         return x
 
