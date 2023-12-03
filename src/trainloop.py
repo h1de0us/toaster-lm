@@ -34,7 +34,7 @@ def train(model,
             tgt_out = src[:, 1:]
             src = src[:, :-1]
             mask = nn.Transformer.generate_square_subsequent_mask(tgt_out.shape[1]).to(device)
-            with autocast(device_type='cuda', dtype=torch.float16):
+            with autocast(device_type='cuda', dtype=torch.bfloat16):
                 logits = model(src, mask)
                 loss = criterion(logits.reshape(-1, logits.shape[-1]), tgt_out.reshape(-1))
             
