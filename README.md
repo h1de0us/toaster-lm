@@ -9,14 +9,12 @@ pip install -r requirements.txt
 To download the data and parse it into one text file, run:
 ```
 chmod +x run.sh
-./run.sh
+./run.sh download data
+cd .. # move to toaster-lm
+./run.sh parse_stories
 ```
+Then just run cells in main.ipynb.
 
-To train a model with the default parameters, use
-```
-python3 train.py
-```
-P.S: Hydra-based config parser is on the way
 
 ### Architecture
 To learn more about the used architecture and its particular qualities, read the [report](https://wandb.ai/h1de0us/LLM-Homework/reports/Toaster-LM-Report--Vmlldzo2MTE2Nzc5)
