@@ -10,3 +10,4 @@ __pycache__
 *val.txt
 *test.txt
 *.ipynb
+*.DS_Store
