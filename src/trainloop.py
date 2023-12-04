@@ -36,7 +36,7 @@ def train(model,
             tgt_out = src[:, 1:]
             src = src[:, :-1]
             with autocast(device_type='cuda', dtype=torch.bfloat16):
-                logits = model(src, pad_masks)
+                logits = model(src)
                 loss = criterion(logits.reshape(-1, logits.shape[-1]), tgt_out.reshape(-1))
             
             loss.backward() # we do not scale the loss to not have issues with precision
@@ -84,7 +84,7 @@ def train(model,
                 tgt_out = src[:, 1:]
                 src = src[:, :-1]
                 with autocast(device_type='cuda', dtype=torch.float16):
-                    logits = model(src, pad_masks)
+                    logits = model(src)
                 loss = criterion(logits.reshape(-1, logits.shape[-1]), tgt_out.reshape(-1))
                 if step % 50 == 0:
                     wandb.log({"test_loss": loss.item()})

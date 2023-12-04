@@ -63,25 +63,25 @@ class TransformerDecoder(nn.Module):
         self.dataset = text_dataset
 
 
-    def _forward(self, x, padding_mask):
+    def _forward(self, x):
         x = self.embeds(x)
         x = self.pos_embeds(x)
         mask = nn.Transformer.generate_square_subsequent_mask(x.shape[1]).to(x.device)
         for decoder_block in self.decoder:
-            x = decoder_block(x, src_mask=mask, src_key_padding_mask=padding_mask, is_causal=True)
+            x = decoder_block(x, src_mask=mask, is_causal=True)
         x = self.fc(x)
         return x
 
 
-    def forward(self, x, padding_mask):
+    def forward(self, x):
         if self.use_flash_attention:
             with torch.backends.cuda.sdp_kernel(
                 enable_flash=True, 
                 enable_math=True, 
                 enable_mem_efficient=True
             ):
-                return self._forward(x, padding_mask)
-        return self._forward(x, padding_mask)
+                return self._forward(x)
+        return self._forward(x)
         
 
     def generate(self, text_dataset, prompt="", max_len=100):
@@ -91,10 +91,8 @@ class TransformerDecoder(nn.Module):
             input_ids = torch.tensor(input_ids).unsqueeze(0)
             # (1, seq_len,)
 
-            mask = torch.triu(torch.ones(max_len, max_len), diagonal=1).bool()
-
             for _ in range(max_len):
-                output = self.forward(input_ids, mask)
+                output = self.forward(input_ids)
                 output_probs = F.softmax(output[:, -1, :], dim=-1)
                 next_token = torch.multinomial(output_probs, 1)
                 input_ids = torch.cat([input_ids, next_token], dim=-1)
